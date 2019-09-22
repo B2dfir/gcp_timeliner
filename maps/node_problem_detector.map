@@ -1,0 +1,20 @@
+{
+	"conditions":{
+		"resource.type":"gce_instance",
+		"jsonPayload.SYSLOG_IDENTIFIER":"node-problem-detector"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[node_problem_detector]",
+		"project":"resource.labels.project_id",
+		"account":"string[no value]",
+		"ip":"string[no value]",
+		"userAgent":"string[no value]",
+		"type":"resource.type",
+		"method":"jsonPayload.SYSLOG_IDENTIFIER",
+		"severity":"jsonPayload.PRIORITY",
+		"summary":"jsonPayload._HOSTNAME,jsonPayload.MESSAGE,jsonPayload._CMDLINE",
+		"detail":"[fulljson]"
+	}
+}

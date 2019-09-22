@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"textPayload":"*"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[textPayload]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"textPayload",
+		"detail":"[fulljson]"
+	}
+}

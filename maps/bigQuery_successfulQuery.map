@@ -1,0 +1,20 @@
+{
+	"conditions":{
+		"resource.type":"bigquery_project",
+		"protoPayload.metadata.jobInsertion.job.jobConfig.type":"QUERY"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[bigQuery_sucessfulQuery]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"protoPayload.metadata.jobInsertion.job.jobConfig.queryConfig.query",
+		"detail":"protoPayload.metadata.jobInsertion.job.jobStats.startTime, protoPayload.metadata.jobInsertion.job.jobStats.endTime, protoPayload.metadata.jobInsertion.job.jobConfig, protoPayload.metadata.jobInsertion.job.jobStatus.errors"
+	}
+}

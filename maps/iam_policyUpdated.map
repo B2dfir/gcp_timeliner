@@ -1,0 +1,21 @@
+{
+	"conditions":{
+		"resource.type":"project",
+		"protoPayload.methodName":"SetIamPolicy",
+		"protoPayload.serviceData.policyDelta.bindingDeltas":"*"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[iam_policyUpdated]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"protoPayload.serviceData.policyDelta.bindingDeltas",
+		"detail":"protoPayload.request.policy.bindings"
+	}
+}

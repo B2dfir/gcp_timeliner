@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"jsonPayload.event_subtype":"compute.firewalls.insert"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[firewall_insert]",
+		"project":"resource.labels.project_id",
+		"account":"jsonPayload.actor.user",
+		"ip":"jsonPayload.ip_address",
+		"userAgent":"jsonPayload.user_agent",
+		"type":"jsonPayload.resource.type",
+		"method":"jsonPayload.event_subtype",
+		"severity":"severity",
+		"summary":"jsonPayload.resource.name",
+		"detail":"jsonPayload"
+	}
+}

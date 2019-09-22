@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"protoPayload.methodName":"google.cloud.bigquery.v2.DatasetService.InsertDataset"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[bigquery_insert_dataset]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"protoPayload.metadata.datasetCreation.dataset.datasetName",
+		"detail":"protoPayload.datasetCreation"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"protoPayload.methodName":"storage.buckets.create"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[gcs_buckets_create]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"protoPayload.resourceName",
+		"detail":"protoPayload"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"resource.type":"logging_sink"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[loggingSink_create]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"resource.labels.name",
+		"detail":"resource.labels.name,protoPayload.request.sink.destination"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"conditions":{
+		"operation.producer":"appengine.googleapis.com/request_id",
+		"protoPayload.@type":"type.googleapis.com/google.appengine.logging.v1.RequestLog"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[gae_request_log]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.ip",
+		"userAgent":"protoPayload.userAgent",
+		"type":"resource.type",
+		"method":"protoPayload.method",
+		"severity":"protoPayload.status",
+		"summary":"protoPayload.resource",
+		"detail":"protoPayload"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"conditions":{
+		"resource.type":"project",
+		"protoPayload.methodName":"SetIamPolicy"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[iam_policyAssigned]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"string[See details column for full policy]",
+		"detail":"protoPayload.request.policy.bindings"
+	}
+}

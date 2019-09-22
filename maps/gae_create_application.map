@@ -1,0 +1,19 @@
+{
+	"conditions":{
+		"protoPayload.methodName":"google.appengine.v1.Applications.CreateApplication"
+	},
+	"fields":{
+		"insertId":"insertId",
+		"timestamp":"timestamp",
+		"map":"string[gae_create_application]",
+		"project":"resource.labels.project_id",
+		"account":"protoPayload.authenticationInfo.principalEmail",
+		"ip":"protoPayload.requestMetadata.callerIp",
+		"userAgent":"protoPayload.requestMetadata.callerSuppliedUserAgent",
+		"type":"resource.type",
+		"method":"protoPayload.methodName",
+		"severity":"severity",
+		"summary":"protoPayload.resourceName",
+		"detail":"protoPayload"
+	}
+}
