@@ -3,7 +3,7 @@ gcp_timeliner.py is a python 3.5.3+ tool designed to enable flexible transformat
 
 The output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
 
-![alt text](https://i.ibb.co/4YckcwH/bbb.png "Timeline example")
+![alt text](https://i.ibb.co/7brRLrm/image.png "Timeline example")
 
 ## Format support
 gcp_timeliner.py is designed to work with a file of single line json logs, as produced by GCP during export to a Google Cloud Storage sink. E.g.
