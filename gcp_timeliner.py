@@ -21,8 +21,7 @@ def readMap(mapPath):
     return map
 
 
-# Function to output one row to the output TSV file
-def writeTsv(out, writer):
+def writeCsv(out, writer):
     """Writes output to TSV
 
     Args:
@@ -34,31 +33,48 @@ def writeTsv(out, writer):
     """
     writer.writerow({
                     'insertId': out['insertId'],
-                    'timestamp': out['timestamp'],
+                    'timestamp': out['datetime'],
                     'map': out['map'],
                     'project': out['project'],
                     'account': out['account'],
                     'ip': out['ip'],
                     'userAgent': out['userAgent'],
                     'type': out['type'],
-                    'method': out['method'],
+                    'method': out['timestamp_desc'],
                     'severity': out['severity'],
-                    'summary': out['summary'],
+                    'summary': out['message'],
                     'detail': out['detail']})
 
 
+def writeTimeSketch(out, outputFile):
+    """Writes output to json lines (jsonl) format for TimeSketch
+
+    Args:
+        out: The object to be written to a json line
+        outputFile: The file to be writen
+
+    Returns:
+        nothing
+    """
+    out['message'] = "[" + out['timestamp_desc'] + "]" + "[" + out['severity'] + "] " + out['message']
+    with open(outputFile, 'a+') as o:
+        json.dump(out, o)
+        o.write("\n")
+        o.close
+
+
 # Function to sanitize bad TSV noncompatable chars from output
-def sanitize(x, flat):
+def sanitize(x, format):
     """Santizes characters from a string to improve output formatting
 
     Args:
         x: string to be sanitized
-        flat: a True/False value which dictates whether sanitization should be flat TSV or formatted for Microsoft Excel
+        format: xlsx, csv or timesketch
 
     Returns:
         sanitized string
     """
-    if flat is not True:
+    if format == "xlsx":
         if "', '" in x:
             x = x.replace(", '", ",\n'")
         if ' ; ' in x:
@@ -78,18 +94,18 @@ def sanitize(x, flat):
                 o += space + z
                 space = space + "  "
             x = o
-    if flat is True:
+    if format == "csv":
         x = x.replace('\n', ' ')
         x = x.replace('\t', ' ')
     return x
 
 
-def defaultParser(log, flat):
+def defaultParser(log, format):
     """Normalizes logs which do not match a map file.
 
     Args:
         log: Log object to be normalised
-        flat: a True/False value which dictates whether fields should be flat TSV or formatted for Microsoft Excel
+        format: xlsx, csv or timesketch
 
     Returns:
         normalised log object
@@ -101,9 +117,9 @@ def defaultParser(log, flat):
     except KeyError:
         out['insertId'] = "no value"
     try:
-        out['timestamp'] = log['timestamp']
+        out['datetime'] = log['timestamp']
     except KeyError:
-        out['timestamp'] = "no value"
+        out['datetime'] = "no value"
     out['map'] = "default"
     try:
         out['project'] = log['resource']['labels']['project_id']
@@ -140,14 +156,14 @@ def defaultParser(log, flat):
         else:
             out['userAgent'] = "no value"
         if 'methodName' in log['protoPayload']:
-            out['method'] = log['protoPayload']['methodName']
+            out['timestamp_desc'] = log['protoPayload']['methodName']
         else:
-            out['method'] = "no value"
+            out['timestamp_desc'] = "no value"
         if 'serviceData' in log['protoPayload']:
             x = str(log['protoPayload']['serviceData'])
-            out['summary'] = x[(x.index(',')+1):]
+            out['message'] = x[(x.index(',')+1):]
         else:
-            out['summary'] = "no serviceData"
+            out['message'] = "no serviceData"
         out['detail'] = log['protoPayload']
     elif 'jsonPayload' in log:
         if 'actor' in log['jsonPayload']:
@@ -163,20 +179,20 @@ def defaultParser(log, flat):
         else:
             out['userAgent'] = "no user agent"
         if 'event_subtype' in log['jsonPayload']:
-            out['method'] = log['jsonPayload']['event_subtype']
+            out['timestamp_desc'] = log['jsonPayload']['event_subtype']
         else:
-            out['method'] = "no method"
-        out['summary'] = "no serviceData"
+            out['timestamp_desc'] = "no method"
+        out['message'] = "no serviceData"
         out['detail'] = log['jsonPayload']
     else:
         out['account'] = "no value"
         out['ip'] = "no value"
         out['userAgent'] = "no value"
-        out['method'] = "no value"
-        out['summary'] = "no value"
+        out['timestamp_desc'] = "no value"
+        out['message'] = "no value"
         out['detail'] = log
     for value in out:
-        out[value] = sanitize(str(out[value]), flat)
+        out[value] = sanitize(str(out[value]), format)
     return out
 
 
@@ -202,13 +218,13 @@ def specialConditions(condition, match):
 # Function to check if a log line matches any map conditions
 # Only supports fields 6 levels deep into a json nest
 # Assumes it will match, then tries to disprove the conditions.
-def processLogEntry(maps, log, flat):
+def processLogEntry(maps, log, format, outputFile):
     """Processes a log line.
 
     Args:
         maps: array of parsed map objects
         log: one line of the log file
-        flat: a True/False value which dictates whether sanitization should be flat TSV or formatted for Microsoft Excel
+        format: xlsx, csv or timesketch
     """
     logger.debug("Processing log:{}".format(log['insertId']))
     tracker = 0
@@ -240,25 +256,31 @@ def processLogEntry(maps, log, flat):
             except KeyError:
                 match = False
         if match is True:
-            logger.debug("applying {} map to insertId:{}".format(m, log['insertId']))
+            logger.debug("applying {} map to insertId:{}".format(m['fields']['map'], log['insertId']))
             tracker += 1
-            out = parseLog(m, log, flat)
-            writeTsv(out, writer)
+            out = parseLog(m, log, format)
+            if format == "timesketch":
+                writeTimeSketch(out, outputFile)
+            else:
+                writeCsv(out, writer)
     if match is False and args.mapsonly is False and tracker == 0:
-        out = defaultParser(log, flat)
-        writeTsv(out, writer)
+        out = defaultParser(log, format)
+        if format == "timesketch":
+            writeTimeSketch(out, outputFile)
+        else:
+            writeCsv(out, writer)
     return
 
 
 # Function to extract map fields to output fields
 # Only supports fields 6 levels deep into a json nest
-def parseLog(m, log, flat):
+def parseLog(m, log, format):
     """Parses a log entry.
 
     Args:
         m: map which was match against a log entry
         log: parsed line of the log file
-        flat: a True/False value which dictates whether sanitization should be flat TSV or formatted for Microsoft Excel
+        format: xlsx, csv or timesketch
 
     Returns:
         normalised log entry
@@ -328,11 +350,39 @@ def parseLog(m, log, flat):
                             fieldval = "<deeply nested json field not supported>"
             except KeyError:
                 fieldval = "<blank>"
-        fieldval = sanitize(fieldval, flat)
+        fieldval = sanitize(fieldval, format)
+        if field == "summary":
+            field = "message"
+        if field == "timestamp":
+            field = "datetime"
+        if field == "method":
+            field = "timestamp_desc"
         output[field] = fieldval
     return output
 
-logger = logging.getLogger(__name__) # 'root' Logger
+
+def process(mapdir, inputFile, format, output):
+    maps = []
+    # Read map files into global variable 'maps'
+    for map in os.listdir(mapdir):
+        mapPath = os.path.join(mapdir, map)
+        m = readMap(mapPath)
+        maps.append(m)
+
+    # Read log file line by line
+    with open(inputFile) as f:
+        for line in f:
+            try:
+                log = json.loads(line)
+            except json.decoder.JSONDecodeError:
+                raise Exception(logger.warning("Failed to load json line. Is the log in \
+the formatted correctly (as individual json lines?). If logs are in an array, \
+use gcp_log_toolbox 'gcloudformatter' function to convert them. \nInvalid line: \n{}".format(line)))
+            # Process each log entry against each map
+            processLogEntry(maps, log, format, output)
+
+
+logger = logging.getLogger(__name__)  # 'root' Logger
 
 if __name__ == "__main__":
     # Argument setup
@@ -340,7 +390,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", required=True, help="GCP log file (json format)")
     parser.add_argument("-m", "--mapdir", help="Directory containing map files", default="maps")
     parser.add_argument("-o", "--output", help="Output file (TSV)", default=strftime("%Y%m%d-%H%M%S_gcptimeline.tsv", gmtime()))
-    parser.add_argument("--flat", help="Removes multi-line formatting (used in excel) to ensure each log entry only uses one line", action="store_true")
+    parser.add_argument("--format", help="Output format", default="xlsx", choices=['xlsx', 'csv', 'timesketch'])
     parser.add_argument("--mapsonly", help="Only outputs entries that match a map file", action="store_true", default=False)
     parser.add_argument("-v", "--verbose", help="Verbose debug logging", action="store_true", default=False)
     args = parser.parse_args()
@@ -353,29 +403,11 @@ if __name__ == "__main__":
     else:
         logger.setLevel(logging.INFO)
 
-    # global variable to hold maps
-    maps = []
-
-    # Create CSV
-    with open(args.output, 'w', newline='') as csvfile:
-        fieldnames = ['insertId', 'timestamp', 'map', 'project', 'account', 'ip', 'userAgent', 'type', 'method', 'severity', 'summary', 'detail']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter='|')
-        writer.writeheader()
-
-        # Read map files into global variable 'maps'
-        for map in os.listdir(args.mapdir):
-            mapPath = os.path.join(args.mapdir, map)
-            m = readMap(mapPath)
-            maps.append(m)
-
-        # Read log file line by line
-        with open(args.file) as f:
-            for line in f:
-                try:
-                    log = json.loads(line)
-                except json.decoder.JSONDecodeError:
-                    raise Exception(logger.warning("Failed to load json line. Is the log in \
-the formatted correctly (as individual json lines?). If logs are in an array, \
-use gcp_log_toolbox 'gcloudformatter' function to convert them."))
-                # Process each log entry against each map
-                processLogEntry(maps, log, args.flat)
+    if args.format == "timesketch":
+        process(args.mapdir, args.file, args.format, args.output)
+    else:
+        with open(args.output, 'w', newline='') as csvfile:
+            fieldnames = ['insertId', 'timestamp', 'map', 'project', 'account', 'ip', 'userAgent', 'type', 'method', 'severity', 'summary', 'detail']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter='|')
+            writer.writeheader()
+            process(args.mapdir, args.file, args.format, args.output)

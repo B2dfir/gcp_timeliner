@@ -3,9 +3,9 @@ gcp_timeliner.py is a python 3.5.3+ tool designed to enable flexible transformat
 
 The output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
 
-![alt text](https://i.ibb.co/7brRLrm/image.png "Timeline example")
+![alt text](https://i.ibb.co/4YckcwH/bbb.png "Timeline example")
 
-## Format support
+## Input format support
 gcp_timeliner.py is designed to work with a file of single line json logs, as produced by GCP during export to a Google Cloud Storage sink. E.g.
 ```
 {"insertId":"6y6dfde2p4wu","logName":"projects [...] }
@@ -15,15 +15,43 @@ gcp_timeliner.py is designed to work with a file of single line json logs, as pr
 
 To collect or manipulate logs in this format, you can use gcp_log_toolbox.py
 
+## Output format support
+gcp_timeliner.py supports the following output formats:
+* csv (the actual output is pipe separated, as commas are frequently in the json output)
+* xlsx
+* timesketch
+
+Specify the format using the --format argument. Based on the selected output format, gcp_timeliner.py will modify the output in the following ways:
+
+### csv
+Each log entry will be written to a single line in a pipe separated format.
+
+### xlsx
+The same as csv, however special formatting characters will be added to simulate nested json formatting in xlsx cells. As a result, each log may span multiple lines, which formats well in excel however breaks single line grep-abiblity.
+
+### timesketch
+Writes each log to a single line json entry, with field transformations to meet the TimeSketch expected format. Transformations applied to the log include:
+* timestamp -> renamed to 'datetime'  
+* method -> renamed to 'timestamp_desc'  
+* summary -> renamed to 'message', and prepended with the strings from 'method' and 'severity' in square brackets.
+
 ## Timeline creation
 A timeline can be created from a single json file.  
 
 Syntax:  
 ```
-python gcp_timeliner.py -f log.json -o timeline.tsv
+python gcp_timeliner.py -f log.json -o timeline.tsv --format xlsx
 ```
 
-By default, various special characters are added to enable visually appealing json formatting in Microsoft Excel. To disable this and output true flat csv, add the argument --flatten.
+## Importing into TimeSketch
+After generating a timeine using the `--format timesketch` argument, follow these steps to import the file into TimeSketch.
+
+* Ensure the output file has a .jsonl extension
+* Copy the .jsonl file to the TimeSketch server
+* Run the following command to import the .jsonl file into the TimeSketch timeline:
+```
+tsctl import --file input.jsonl --username admin --timeline_name gcp_timeliner
+```
 
 ## Colourised Template
 For easy review and filtering, load the timeline tsv file into the A1 cell in the Microsoft Excel template included in this project.
