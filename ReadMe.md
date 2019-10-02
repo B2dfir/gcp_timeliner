@@ -1,7 +1,7 @@
 # gcp_timeliner.py  
-gcp_timeliner.py is a python 3.5.3+ tool designed to enable flexible transformation of Google Cloud Platform json logs to normalised csv format. Json logs are mapped to a normalised field set based on conditions specified in 'map' files. If a log doesn't match the conditions in a 'map' file, gcp_timeliner.py will use a default map.
+gcp_timeliner.py is a python 3.5.3+ tool designed to enable flexible transformation of Google Cloud Platform json logs to normalised csv, xlsx or timesketch format. Json logs are mapped to a normalised field set based on conditions specified in 'map' files. If a log doesn't match the conditions in a 'map' file, gcp_timeliner.py will use a default map.
 
-The output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
+The xlsx output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
 
 ![alt text](https://i.ibb.co/4YckcwH/bbb.png "Timeline example")
 
