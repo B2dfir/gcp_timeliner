@@ -92,7 +92,7 @@ Conditions are compared against a json log entry to see if the map should be app
 All conditions must match for a map to be applied.
 
 ### Fields
-Fields define which json values should be included in each csv field. Multiple values can be inserted into one csv field by separating two json fields with a comma.
+Fields define which json values should be included in each output field. Multiple values can be inserted into one output field by separating two json fields with a comma.
 
 E.g.
 ```
