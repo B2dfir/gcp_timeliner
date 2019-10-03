@@ -15,7 +15,7 @@ gcp_timeliner.py is designed to work with a file of single line json logs, as pr
 {"insertId":"-ajhlaze80biz","logName":"projects [...] }
 ```
 
-To collect or manipulate logs in this format, you can use gcp_log_toolbox.py
+To collect or manipulate logs in this format, you can use [gcp_log_toolbox](https://github.com/B2dfir/gcp_log_toolbox "gcp_log_toolbox").
 
 ## Output format support
 gcp_timeliner.py supports the following output formats:
@@ -29,11 +29,11 @@ Specify the format using the --format argument. Based on the selected output for
 Each log entry will be written to a single line in a pipe separated format.
 
 ### xlsx
-The same as csv, however special formatting characters will be added to simulate nested json formatting in xlsx cells. As a result, each log may span multiple lines, which formats well in excel however breaks single line grep-abiblity.
+The same as csv, however special formatting characters will be added to simulate nested json formatting in xlsx cells. As a result, each log may span multiple lines, which formats well in excel however breaks single line grep-ability.
 
 The xlsx output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
 
-### timesketch
+### TimeSketch
 Writes each log to a single line json entry, with field transformations to meet the TimeSketch expected format. Transformations applied to the log include:
 * timestamp -> renamed to 'datetime'  
 * method -> renamed to 'timestamp_desc'  
