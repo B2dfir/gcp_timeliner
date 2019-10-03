@@ -1,8 +1,10 @@
 # gcp_timeliner.py  
 gcp_timeliner.py is a python 3.5.3+ tool designed to enable flexible transformation of Google Cloud Platform json logs to normalised csv, xlsx or timesketch format. Json logs are mapped to a normalised field set based on conditions specified in 'map' files. If a log doesn't match the conditions in a 'map' file, gcp_timeliner.py will use a default map.
 
-The xlsx output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
+TimeSketch:  
+![alt text](https://i.ibb.co/JFjjBbJ/Screen-Shot-2019-10-03-at-9-10-36-am.png "TimeSketch Example")
 
+Xlsx:  
 ![alt text](https://i.ibb.co/4YckcwH/bbb.png "Timeline example")
 
 ## Input format support
@@ -29,6 +31,8 @@ Each log entry will be written to a single line in a pipe separated format.
 ### xlsx
 The same as csv, however special formatting characters will be added to simulate nested json formatting in xlsx cells. As a result, each log may span multiple lines, which formats well in excel however breaks single line grep-abiblity.
 
+The xlsx output of gcp_timeliner.py can be imported into the included colourised_template.xslx for assisted data analysis and stacking.
+
 ### timesketch
 Writes each log to a single line json entry, with field transformations to meet the TimeSketch expected format. Transformations applied to the log include:
 * timestamp -> renamed to 'datetime'  
@@ -52,9 +56,6 @@ After generating a timeine using the `--format timesketch` argument, follow thes
 ```
 tsctl import --file input.jsonl --username admin --timeline_name gcp_timeliner
 ```
-
-## Colourised Template
-For easy review and filtering, load the timeline tsv file into the A1 cell in the Microsoft Excel template included in this project.
 
 ## Map Files
 If you would like to adjust the way gcp_timeliner.py parses certain json logs, you can create a new map file. Map files consist of conditions and field allocations in json format.
